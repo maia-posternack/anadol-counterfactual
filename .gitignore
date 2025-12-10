@@ -9,27 +9,24 @@ env/
 ENV/
 .venv
 
-# Data
-data/artworks/**/*
+# Data (keeping MoMA data and latent space for Railway deployment)
 data/queries/*
 data/generated/*
-!data/artworks/.gitkeep
 !data/queries/.gitkeep
 !data/generated/.gitkeep
 
-# Outputs
+# Outputs (keeping latent_space for Railway, excluding others)
 outputs/embeddings/*
 outputs/nearest_neighbors/*
 outputs/interpolations/*
-outputs/latent_space/*
 outputs/web/*
 !outputs/embeddings/.gitkeep
 !outputs/nearest_neighbors/.gitkeep
 !outputs/interpolations/.gitkeep
-!outputs/latent_space/.gitkeep
 !outputs/web/.gitkeep
-*.npy
-*.pkl
+
+# Exclude subset (using full dataset on Railway)
+outputs/latent_space_subset/
 
 # IDE
 .vscode/
