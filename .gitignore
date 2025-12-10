@@ -15,7 +15,7 @@ data/generated/*
 !data/queries/.gitkeep
 !data/generated/.gitkeep
 
-# Outputs (keeping latent_space for Railway, excluding others)
+# Outputs
 outputs/embeddings/*
 outputs/nearest_neighbors/*
 outputs/interpolations/*
@@ -24,9 +24,6 @@ outputs/web/*
 !outputs/nearest_neighbors/.gitkeep
 !outputs/interpolations/.gitkeep
 !outputs/web/.gitkeep
-
-# Exclude subset (using full dataset on Railway)
-outputs/latent_space_subset/
 
 # IDE
 .vscode/

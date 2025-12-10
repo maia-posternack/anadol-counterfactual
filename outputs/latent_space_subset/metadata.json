@@ -1,7 +1,0 @@
-{
-  "n_artworks": 158822,
-  "embedding_dim_full": 384,
-  "embedding_dim_reduced": 50,
-  "model_name": "all-MiniLM-L6-v2",
-  "pca_variance_explained": 0.5983555316925049
-}
