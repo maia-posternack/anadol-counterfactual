@@ -709,10 +709,11 @@ if __name__ == '__main__':
     print(f"Loaded {len(artworks):,} artworks in latent space")
     print()
     print("Starting server...")
-    print("Open: http://localhost:5001")
+    port = int(os.getenv('PORT', 5001))
+    print(f"Open: http://localhost:{port}")
     print()
     print("Press Ctrl+C to stop")
     print("=" * 70)
     print()
     
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)

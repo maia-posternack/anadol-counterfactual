@@ -57,3 +57,4 @@ instance/
 # Environment
 .env
 .env.local
+.vercel
