@@ -20,7 +20,7 @@ An interactive AI art project exploring MoMA's collection through latent space v
 
 1. **Clone the repository**
    ```bash
-   git clone [https://github.com/maia-posternack/what-the-dream-obscures.git](https://github.com/maia-posternack/anadol-counterfactual.git)
+   git clone https://github.com/maia-posternack/what-the-dream-obscures.git
    cd what-the-dream-obscures
    ```
 
