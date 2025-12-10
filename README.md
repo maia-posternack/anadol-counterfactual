@@ -42,7 +42,7 @@ An interactive AI art project exploring MoMA's collection through latent space v
 
 5. **Run the app**
    ```bash
-   python app.py
+   python3 app.py
    ```
 
 6. **Open in browser**
