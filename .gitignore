@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Data
+data/artworks/**/*
+data/queries/*
+data/generated/*
+!data/artworks/.gitkeep
+!data/queries/.gitkeep
+!data/generated/.gitkeep
+
+# Outputs
+outputs/embeddings/*
+outputs/nearest_neighbors/*
+outputs/interpolations/*
+outputs/latent_space/*
+outputs/web/*
+!outputs/embeddings/.gitkeep
+!outputs/nearest_neighbors/.gitkeep
+!outputs/interpolations/.gitkeep
+!outputs/latent_space/.gitkeep
+!outputs/web/.gitkeep
+*.npy
+*.pkl
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Models
+*.pt
+*.pth
+*.ckpt
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Flask
+instance/
+.webassets-cache
+
+# Environment
+.env
+.env.local

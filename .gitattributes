@@ -1,0 +1,5 @@
+*.npy filter=lfs diff=lfs merge=lfs -text
+outputs/latent_space/artworks.json filter=lfs diff=lfs merge=lfs -text
+outputs/latent_space/descriptions.json filter=lfs diff=lfs merge=lfs -text
+data/artworks/moma_data/Artworks.json filter=lfs diff=lfs merge=lfs -text
+data/artworks/moma_data/Artworks.txt filter=lfs diff=lfs merge=lfs -text

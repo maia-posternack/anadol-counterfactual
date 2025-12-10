@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What the Dream Obscures | MoMA Latent Space Explorer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Vis.js Network for graph visualization -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        #network {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div id="startScreen" class="start-screen">
+        <div class="start-content">
+            <h1 class="title-main">What the Dream Obscures</h1>
+            <p class="subtitle-main">A Counterfactual Exploration of MoMA's Archive</p>
+            <p class="description-main">
+                If Anadol's system represents the museum's "dream," this exploration reveals what the dream obscures.
+                <br><br>
+                Navigate the latent space. Make discrete choices. See what metadata looks like.
+            </p>
+            <button id="startBtn" class="btn btn-start">
+                Begin Your Journey
+            </button>
+            <p class="stats-line">{{ "{:,}".format(total_artworks) }} artworks • Neural network latent space • Real-time generation</p>
+        </div>
+    </div>
+
+    <!-- Main Explorer -->
+    <div id="mainExplorer" style="display: none;">
+        <!-- Left Panel: Network Graph -->
+        <div class="panel panel-left">
+            <div class="panel-header">
+                <h2>Latent Space Map</h2>
+                <div class="path-controls">
+                    <button id="aboutBtn" class="btn btn-small">About</button>
+                    <button id="showStatsBtn" class="btn btn-small">Statistics</button>
+                    <button id="resetBtn" class="btn btn-small">Reset</button>
+                </div>
+            </div>
+            <div id="network"></div>
+            
+            <!-- Path History -->
+            <div class="path-history">
+                <div class="path-history-header">Your Path</div>
+                <div id="pathHistory" class="path-history-items"></div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Artwork Details -->
+        <div class="panel panel-right">
+            <div class="artwork-viewer">
+                <!-- Dual AI Display -->
+                <div class="dual-ai-container">
+                    <!-- Text-to-Image AI -->
+                    <div class="ai-display-half">
+                        <div class="section-header">
+                            <h2>Text-to-Image Hallucination</h2>
+                            <p class="explanation">FLUX imagines the artwork from metadata text</p>
+                        </div>
+                        <div id="aiViz" class="half-viz-display">
+                            <div class="viz-placeholder">Begin your journey to start</div>
+                        </div>
+                    </div>
+
+                    <!-- GAN from Embedding -->
+                    <div class="ai-display-half">
+                        <div class="section-header">
+                            <h2>GAN from Latent Vector</h2>
+                            <p class="explanation">What the embedding actually generates (like Anadol)</p>
+                        </div>
+                        <div id="ganViz" class="half-viz-display">
+                            <div class="viz-placeholder">Begin your journey to start</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transparency Section -->
+                <div class="transparency-section">
+                    <button class="transparency-toggle" id="toggleTransparency">
+                        <span class="toggle-icon">⊕</span>
+                        <span class="toggle-text">Reveal the Machinery</span>
+                    </button>
+                    <div class="transparency-content" id="transparencyContent" style="display: none;">
+                        
+                        <!-- Metadata Input -->
+                        <div class="transparency-card">
+                            <h3>What Was Compressed into the Neural Network</h3>
+                            <div id="metadataDisplay" class="metadata-grid"></div>
+                        </div>
+
+                        <!-- Dual Generation Approaches -->
+                        <div class="transparency-card">
+                            <h3>Two Different AI Approaches</h3>
+                            <p class="card-explanation">
+                                <strong>Left (Text-to-Image):</strong> FLUX receives this exact text prompt and 
+                                hallucinates an image from training data. Zero visual information.
+                            </p>
+                            <div id="aiPrompt" class="code-display">Generating...</div>
+                            <p class="card-explanation" style="margin-top: 15px;">
+                                <strong>Right (GAN from Vector):</strong> Abstract visualization generated directly 
+                                from the 50D latent vector itself — this is closer to what Anadol's StyleGAN2 does. 
+                                It doesn't try to "represent" the artwork, it shows the pure mathematical space.
+                            </p>
+                        </div>
+
+                        <!-- Latent Space Visualization -->
+                        <div class="transparency-card">
+                            <h3>50-Dimensional Embedding Coordinates</h3>
+                            <p class="card-explanation">
+                                These 50 numbers are what the "collective memory" actually is. 
+                                Not a dream — just vector math.
+                            </p>
+                            <div id="latentViz" class="small-viz-display"></div>
+                        </div>
+
+                        <!-- Similarity Explanation -->
+                        <div class="transparency-card">
+                            <h3>How "Similarity" Actually Works</h3>
+                            <div class="formula-display">
+                                <p><strong>Cosine Similarity Formula:</strong></p>
+                                <code>
+                                    similarity = (A · B) / (||A|| × ||B||)
+                                </code>
+                                <p class="formula-explanation">
+                                    Where A and B are 50-dimensional vectors. Range: -1 (opposite) to +1 (identical).
+                                    <br><br>
+                                    <strong>Current neighbors are selected by:</strong>
+                                    <br>1. Computing cosine similarity between current artwork's embedding and ALL 158,822 artworks
+                                    <br>2. Sorting by similarity score
+                                    <br>3. Taking top 10
+                                    <br><br>
+                                    This is not "machine learning" — it's dot product arithmetic.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Overlay -->
+        <div id="statsOverlay" class="overlay" style="display: none;">
+            <div class="overlay-content">
+                <button class="close-btn" id="closeStats">×</button>
+                <h2>What You're Revealing</h2>
+                <p class="stats-intro">Your choices expose patterns in MoMA's "collective memory"</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Nationalities</h3>
+                        <div id="nationalityStats"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Gender Distribution</h3>
+                        <div id="genderStats"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Departments</h3>
+                        <div id="departmentStats"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Acquisition Decades</h3>
+                        <div id="acquisitionStats"></div>
+                    </div>
+                </div>
+
+                <div class="critical-insight">
+                    <strong>Critical Insight:</strong> These patterns reveal the colonial, gendered, and temporal biases
+                    that Anadol's smooth abstraction obscures. Every "collective memory" is curated, not natural.
+                </div>
+            </div>
+        </div>
+
+        <!-- About Overlay -->
+        <div id="aboutOverlay" class="overlay" style="display: none;">
+            <div class="overlay-content about-content">
+                <button class="close-btn" id="closeAbout">×</button>
+                <h1 class="about-title">What the Dream Obscures</h1>
+                <p class="about-subtitle">A Critical Tool for Understanding AI Art's Ideological Dimensions</p>
+                
+                <div class="about-section">
+                    <h2>The Critique</h2>
+                    <p>
+                        If Refik Anadol's <em>Unsupervised</em> (2022) represents MoMA's "dream," 
+                        this tool reveals what that dream obscures.
+                    </p>
+                    <p>
+                        Anadol's work uses smooth, flowing abstractions to mystify the computational 
+                        processes behind AI art. This counterfactual exploration forces discrete choices, 
+                        exposes metadata, and reveals the cold arithmetic beneath the "machine dreams."
+                    </p>
+                </div>
+
+                <div class="about-section">
+                    <h2>How It Works</h2>
+                    <p>
+                        <strong>158,822 artworks</strong> from MoMA's collection are compressed into 
+                        <strong>50-dimensional vectors</strong> using a sentence transformer model. 
+                        You navigate this latent space by clicking nodes in the network graph.
+                    </p>
+                    <p>
+                        <strong>Left visualization:</strong> FLUX Schnell (diffusion model) generates images 
+                        from text metadata alone — pure hallucination with zero visual information.
+                    </p>
+                    <p>
+                        <strong>Right visualization:</strong> Abstract patterns generated directly from the 
+                        latent vector — this is what Anadol's StyleGAN2 actually does.
+                    </p>
+                </div>
+
+                <div class="about-section">
+                    <h2>What It Exposes</h2>
+                    <ul class="about-list">
+                        <li><strong>Discrete operations</strong> instead of smooth transitions</li>
+                        <li><strong>Visible metadata</strong> instead of hidden compression</li>
+                        <li><strong>Mathematical formulas</strong> instead of "machine dreams"</li>
+                        <li><strong>Path tracking</strong> instead of endless loops</li>
+                        <li><strong>Statistical biases</strong> in the "collective memory"</li>
+                        <li><strong>Corporate infrastructure</strong> (NVIDIA, Replicate, OpenAI)</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h2>Technical Stack</h2>
+                    <p class="tech-stack">
+                        <strong>Embeddings:</strong> sentence-transformers (all-MiniLM-L6-v2) • 
+                        <strong>Dimensionality:</strong> PCA to 50D • 
+                        <strong>Similarity:</strong> Cosine similarity • 
+                        <strong>Text-to-Image:</strong> FLUX Schnell • 
+                        <strong>Visualization:</strong> vis.js, matplotlib, canvas • 
+                        <strong>Backend:</strong> Flask, NumPy
+                    </p>
+                </div>
+
+                <div class="about-section">
+                    <h2>Artist Statement</h2>
+                    <p>
+                        This tool is a form of critical making. Where Anadol smooths over choices and obscures 
+                        the machinery, this tool forces you to see every decision, every calculation, every bias. 
+                        It's not propaganda disguised as art. Rather, I attempt to be as transparent as possible. 
+                    </p>
+                </div>
+
+                <div class="about-footer">
+                    <p>A counterfactual exploration • {{ "{:,}".format(total_artworks) }} artworks • 2024</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p id="loadingText">Loading...</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
